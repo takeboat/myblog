@@ -65,23 +65,23 @@ type (
 		Title      string `json:"title"`
 		Content    string `json:"content"`
 		UserId     int64  `json:"user_id"`
-		CategoryId *int64 `json:"category_id,optional"`
+		CategoryId *int64 `json:"category_id,omitempty"`
 		Status     int    `json:"status"`
 		ViewCount  int    `json:"view_count"`
-		Tags       []Tag  `json:"tags,optional"`
+		Tags       []Tag  `json:"tags,omitempty"`
 		CreatedAt  string `json:"created_at"`
 		UpdatedAt  string `json:"updated_at"`
 	}
 	CreatePostReq {
 		Title      string  `json:"title"`
 		Content    string  `json:"content"`
-		CategoryId *int64  `json:"category_id,optional"`
-		TagIds     []int64 `json:"tag_ids,optional"`
+		CategoryId *int64  `json:"category_id,omitempty"`
+		TagIds     []int64 `json:"tag_ids,omitempty"`
 	}
 	PostListReq {
-		Page       int    `json:"page,default=1"`
-		PageSize   int    `json:"page_size,default=10"`
-		CategoryId *int64 `json:"category_id,optional"`
+		Page       int    `json:"page"`
+		PageSize   int    `json:"page_size"`
+		CategoryId *int64 `json:"category_d,omitempty"`
 	}
 	PostListResp {
 		List  []Post `json:"list"`

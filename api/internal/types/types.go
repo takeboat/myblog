@@ -67,9 +67,9 @@ type Post struct {
 }
 
 type PostListReq struct {
-	Page       int    `json:"page,default=1"`
-	PageSize   int    `json:"page_size,default=10"`
-	CategoryId *int64 `json:"category_id,omitempty"`
+	Page       int    `json:"page"`
+	PageSize   int    `json:"page_size"`
+	CategoryId *int64 `json:"category_d,omitempty"`
 }
 
 type PostListResp struct {
