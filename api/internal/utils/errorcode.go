@@ -15,7 +15,7 @@ const (
 	UserNotFound
 	InvalidCredentials
 	UserNotActive
-
+	GenerateTokenFailed
 	// 分类相关错误码 (200-299)
 	CategoryAlreadyExists = 200 + iota // 200
 	CategoryNotFound                   // 201
@@ -44,11 +44,11 @@ var ErrorCodeMessages = map[int]string{
 	RecordNotFound:   "记录不存在",
 
 	// 用户相关错误
-	UserAlreadyExists:  "用户已存在",
-	UserNotFound:       "用户不存在",
-	InvalidCredentials: "用户名或密码错误",
-	UserNotActive:      "用户未激活",
-
+	UserAlreadyExists:   "用户已存在",
+	UserNotFound:        "用户不存在",
+	InvalidCredentials:  "用户名或密码错误",
+	UserNotActive:       "用户未激活",
+	GenerateTokenFailed: "生成Token失败",
 	// 分类相关错误
 	CategoryAlreadyExists: "分类已存在",
 	CategoryNotFound:      "分类不存在",

@@ -28,10 +28,12 @@ func NewUpdateLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UpdateLogi
 
 func (l *UpdateLogic) Update(req *types.RegisterReq) (resp *types.BaseResp, err error) {
 	user, err := l.svcCtx.UserModel.FindByUsername(req.Username)
+	// 数据库错误
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		resp = utils.NewErrRespWithCode(utils.DatabaseError)
 		return
 	}
+	// 用户不存在
 	if user == nil {
 		resp = utils.NewErrRespWithCode(utils.UserNotFound)
 		return
