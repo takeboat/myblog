@@ -1,4 +1,8 @@
 Name: blog-api
 Host: 0.0.0.0
 Port: 8888
-DataSource: root:root@tcp(127.0.0.1:3306)/blog?charset=utf8mb4&parseTime=true
+DataBase:
+  DataSource: root:root@tcp(127.0.0.1:3306)/blog?charset=utf8mb4&parseTime=true
+JwtAuth:
+  AccessSecret: blog-takeboat-key
+  AccessExpire: 3600 * 10
