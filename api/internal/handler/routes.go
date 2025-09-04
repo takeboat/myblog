@@ -33,11 +33,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/api/category/list",
 				Handler: category.ListCategoriesHandler(serverCtx),
 			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/api/category/update",
-				Handler: category.UpdateCategoryHandler(serverCtx),
-			},
 		},
 	)
 

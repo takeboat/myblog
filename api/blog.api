@@ -121,9 +121,6 @@ service blog-api {
 	@handler listCategories
 	get /api/category/list returns (CategoryListResp)
 
-	@handler updateCategory
-	post /api/category/update (CreateCategoryReq) returns (BaseResp)
-
 	@handler deleteCategory
 	post /api/category/delete (IdReq) returns (BaseResp)
 }

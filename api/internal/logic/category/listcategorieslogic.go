@@ -24,7 +24,19 @@ func NewListCategoriesLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Li
 }
 
 func (l *ListCategoriesLogic) ListCategories() (resp *types.CategoryListResp, err error) {
-	// todo: add your logic here and delete this line
-
+	categories, err := l.svcCtx.CategoryModel.List()
+	if err != nil {
+		return
+	}
+	resp = &types.CategoryListResp{
+		List: make([]types.Category, len(categories)),
+	}
+	for i, category := range categories {
+		resp.List[i] = types.Category{
+			Id:        category.ID,
+			Name:      category.Name,
+			CreatedAt: category.CreatedAt.Format("2006-01-02 15:04:05"),
+		}
+	}
 	return
 }
