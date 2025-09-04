@@ -10,10 +10,11 @@ const (
 	Forbidden               // 4
 	RecordNotFound          // 5
 
-	UserAlreadyExists  = 100 + iota // 100
-	UserNotFound                    // 101
-	InvalidCredentials              // 102
-	UserNotActive                   // 103
+	// 用户操作的相关错误
+	UserAlreadyExists = 100 + iota
+	UserNotFound
+	InvalidCredentials
+	UserNotActive
 
 	// 分类相关错误码 (200-299)
 	CategoryAlreadyExists = 200 + iota // 200
@@ -30,6 +31,7 @@ const (
 	// 数据库相关错误码 (500-599)
 	DatabaseError          = 500 + iota // 500
 	DatabaseRecordNotFound              // 501
+
 )
 
 // 错误码对应的消息映射

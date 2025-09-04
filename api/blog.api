@@ -27,6 +27,9 @@ type (
 		AccessToken string `json:"access_token"`
 		ExpiresIn   int64  `json:"expires_in"`
 	}
+	UserInfoReq{
+		Username string `json:"username"`
+	}
 	UserInfoResp {
 		Id        int64  `json:"id"`
 		Username  string `json:"username"`

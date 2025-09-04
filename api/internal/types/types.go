@@ -94,6 +94,10 @@ type TagListResp struct {
 	List []Tag `json:"list"`
 }
 
+type UserInfoReq struct {
+	Username string `json:"username"`
+}
+
 type UserInfoResp struct {
 	Id        int64  `json:"id"`
 	Username  string `json:"username"`
