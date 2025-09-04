@@ -1,0 +1,166 @@
+syntax = "v1"
+
+type (
+	// 通用响应结构
+	BaseResp {
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+	}
+	// 带数据的通用响应结构
+	DataResp {
+		Code    int         `json:"code"`
+		Message string      `json:"message"`
+		Data    interface{} `json:"data"`
+	}
+	// 用户相关
+	RegisterReq {
+		Username string `json:"username"`
+		Password string `json:"password"`
+		Nickname string `json:"nickname"`
+		Email    string `json:"email"`
+	}
+	LoginReq {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+	LoginResp {
+		AccessToken string `json:"access_token"`
+		ExpiresIn   int64  `json:"expires_in"`
+	}
+	UserInfoResp {
+		Id        int64  `json:"id"`
+		Username  string `json:"username"`
+		Nickname  string `json:"nickname"`
+		Email     string `json:"email"`
+		Avatar    string `json:"avatar"`
+		CreatedAt string `json:"created_at"`
+	}
+	// 分类相关
+	Category {
+		Id        int64  `json:"id"`
+		Name      string `json:"name"`
+		CreatedAt string `json:"created_at"`
+	}
+	CategoryListResp {
+		List []Category `json:"list"`
+	}
+	CreateCategoryReq {
+		Name string `json:"name"`
+	}
+	// 标签相关
+	Tag {
+		Id        int64  `json:"id"`
+		Name      string `json:"name"`
+		CreatedAt string `json:"created_at"`
+	}
+	TagListResp {
+		List []Tag `json:"list"`
+	}
+	CreateTagReq {
+		Name string `json:"name"`
+	}
+	// 文章相关
+	Post {
+		Id         int64  `json:"id"`
+		Title      string `json:"title"`
+		Content    string `json:"content"`
+		UserId     int64  `json:"user_id"`
+		CategoryId *int64 `json:"category_id,optional"`
+		Status     int    `json:"status"`
+		ViewCount  int    `json:"view_count"`
+		Tags       []Tag  `json:"tags,optional"`
+		CreatedAt  string `json:"created_at"`
+		UpdatedAt  string `json:"updated_at"`
+	}
+	CreatePostReq {
+		Title      string  `json:"title"`
+		Content    string  `json:"content"`
+		CategoryId *int64  `json:"category_id,optional"`
+		TagIds     []int64 `json:"tag_ids,optional"`
+	}
+	PostListReq {
+		Page       int    `json:"page,default=1"`
+		PageSize   int    `json:"page_size,default=10"`
+		CategoryId *int64 `json:"category_id,optional"`
+	}
+	PostListResp {
+		List  []Post `json:"list"`
+		Total int64  `json:"total"`
+	}
+	IdReq {
+		Id int64 `path:"id"`
+	}
+)
+
+// 用户服务
+@server (
+	group: user
+)
+service blog-api {
+	@handler register
+	post /api/user/register (RegisterReq) returns (BaseResp)
+
+	@handler login
+	post /api/user/login (LoginReq) returns (LoginResp)
+
+	@handler info
+	get /api/user/info returns (UserInfoResp)
+
+	@handler update
+	post /api/user/update (RegisterReq) returns (BaseResp)
+}
+
+// 分类服务
+@server (
+	group: category
+)
+service blog-api {
+	@handler createCategory
+	post /api/category/create (CreateCategoryReq) returns (BaseResp)
+
+	@handler listCategories
+	get /api/category/list returns (CategoryListResp)
+
+	@handler updateCategory
+	post /api/category/update (CreateCategoryReq) returns (BaseResp)
+
+	@handler deleteCategory
+	post /api/category/delete (IdReq) returns (BaseResp)
+}
+
+// 标签服务
+@server (
+	group: tag
+)
+service blog-api {
+	@handler createTag
+	post /api/tag/create (CreateTagReq) returns (BaseResp)
+
+	@handler listTags
+	get /api/tag/list returns (TagListResp)
+
+	@handler deleteTag
+	post /api/tag/delete (IdReq) returns (BaseResp)
+}
+
+// 文章服务
+@server (
+	group: post
+)
+service blog-api {
+	@handler createPost
+	post /api/post/create (CreatePostReq) returns (BaseResp)
+
+	@handler updatePost
+	post /api/post/update (CreatePostReq) returns (BaseResp)
+
+	@handler deletePost
+	post /api/post/delete (IdReq) returns (BaseResp)
+
+	@handler listPosts
+	get /api/post/list (PostListReq) returns (PostListResp)
+
+	@handler postDetail
+	get /api/post/detail (IdReq) returns (Post)
+}
+
