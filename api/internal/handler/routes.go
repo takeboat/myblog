@@ -8,6 +8,7 @@ import (
 
 	category "blog/api/internal/handler/category"
 	post "blog/api/internal/handler/post"
+	public "blog/api/internal/handler/public"
 	tag "blog/api/internal/handler/tag"
 	user "blog/api/internal/handler/user"
 	"blog/api/internal/svc"
@@ -28,12 +29,8 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/api/category/delete",
 				Handler: category.DeleteCategoryHandler(serverCtx),
 			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/api/category/list",
-				Handler: category.ListCategoriesHandler(serverCtx),
-			},
 		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 
 	server.AddRoutes(
@@ -49,19 +46,45 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: post.DeletePostHandler(serverCtx),
 			},
 			{
+				Method:  http.MethodPost,
+				Path:    "/api/post/update",
+				Handler: post.UpdatePostHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/api/category/list",
+				Handler: public.ListCategoriesHandler(serverCtx),
+			},
+			{
 				Method:  http.MethodGet,
 				Path:    "/api/post/detail",
-				Handler: post.PostDetailHandler(serverCtx),
+				Handler: public.PostDetailHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodGet,
 				Path:    "/api/post/list",
-				Handler: post.ListPostsHandler(serverCtx),
+				Handler: public.ListPostsHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/api/tag/list",
+				Handler: public.ListTagsHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/api/user/info",
+				Handler: public.InfoHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/api/post/update",
-				Handler: post.UpdatePostHandler(serverCtx),
+				Path:    "/api/user/login",
+				Handler: public.LoginHandler(serverCtx),
 			},
 		},
 	)
@@ -78,26 +101,12 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/api/tag/delete",
 				Handler: tag.DeleteTagHandler(serverCtx),
 			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/api/tag/list",
-				Handler: tag.ListTagsHandler(serverCtx),
-			},
 		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 
 	server.AddRoutes(
 		[]rest.Route{
-			{
-				Method:  http.MethodGet,
-				Path:    "/api/user/info",
-				Handler: user.InfoHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/api/user/login",
-				Handler: user.LoginHandler(serverCtx),
-			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/api/user/register",
@@ -109,5 +118,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: user.UpdateHandler(serverCtx),
 			},
 		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 }

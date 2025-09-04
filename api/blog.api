@@ -27,7 +27,7 @@ type (
 		AccessToken string `json:"access_token"`
 		ExpiresIn   int64  `json:"expires_in"`
 	}
-	UserInfoReq{
+	UserInfoReq {
 		Username string `json:"username"`
 	}
 	UserInfoResp {
@@ -95,56 +95,69 @@ type (
 	}
 )
 
-// 用户服务
+// 读操作 - 不需要认证
 @server (
+	group: public
+)
+service blog-api {
+	@handler login
+	post /api/user/login (LoginReq) returns (LoginResp)
+
+	@handler info
+	get /api/user/info (UserInfoReq) returns (UserInfoResp)
+
+	@handler listCategories
+	get /api/category/list returns (CategoryListResp)
+
+	@handler listTags
+	get /api/tag/list returns (TagListResp)
+
+	@handler listPosts
+	get /api/post/list (PostListReq) returns (PostListResp)
+
+	@handler postDetail
+	get /api/post/detail (IdReq) returns (Post)
+}
+
+// 写操作 - 需要JWT认证
+@server (
+	jwt:   Auth
 	group: user
 )
 service blog-api {
 	@handler register
 	post /api/user/register (RegisterReq) returns (BaseResp)
 
-	@handler login
-	post /api/user/login (LoginReq) returns (LoginResp)
-
-	@handler info
-	get /api/user/info returns (UserInfoResp)
-
 	@handler update
 	post /api/user/update (RegisterReq) returns (BaseResp)
 }
 
-// 分类服务
 @server (
+	jwt:   Auth
 	group: category
 )
 service blog-api {
 	@handler createCategory
 	post /api/category/create (CreateCategoryReq) returns (BaseResp)
 
-	@handler listCategories
-	get /api/category/list returns (CategoryListResp)
-
 	@handler deleteCategory
 	post /api/category/delete (IdReq) returns (BaseResp)
 }
 
-// 标签服务
 @server (
+	jwt:   Auth
 	group: tag
 )
 service blog-api {
 	@handler createTag
 	post /api/tag/create (CreateTagReq) returns (BaseResp)
 
-	@handler listTags
-	get /api/tag/list returns (TagListResp)
-
 	@handler deleteTag
 	post /api/tag/delete (IdReq) returns (BaseResp)
 }
 
-// 文章服务
 @server (
+	jwt:   Auth
 	group: post
 )
 service blog-api {
@@ -156,11 +169,5 @@ service blog-api {
 
 	@handler deletePost
 	post /api/post/delete (IdReq) returns (BaseResp)
-
-	@handler listPosts
-	get /api/post/list (PostListReq) returns (PostListResp)
-
-	@handler postDetail
-	get /api/post/detail (IdReq) returns (Post)
 }
 

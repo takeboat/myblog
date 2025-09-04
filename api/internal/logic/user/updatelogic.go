@@ -2,11 +2,14 @@ package user
 
 import (
 	"context"
+	"errors"
 
 	"blog/api/internal/svc"
 	"blog/api/internal/types"
+	"blog/api/internal/utils"
 
 	"github.com/zeromicro/go-zero/core/logx"
+	"gorm.io/gorm"
 )
 
 type UpdateLogic struct {
@@ -24,7 +27,22 @@ func NewUpdateLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UpdateLogi
 }
 
 func (l *UpdateLogic) Update(req *types.RegisterReq) (resp *types.BaseResp, err error) {
-	// todo: add your logic here and delete this line
-
+	user, err := l.svcCtx.UserModel.FindByUsername(req.Username)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		resp = utils.NewErrRespWithCode(utils.DatabaseError)
+		return
+	}
+	if user == nil {
+		resp = utils.NewErrRespWithCode(utils.UserNotFound)
+		return
+	}
+	user.Nickname = req.Nickname
+	user.Email = req.Email
+	err = l.svcCtx.UserModel.Update(user)
+	if err != nil {
+		resp = utils.NewErrRespWithCode(utils.DatabaseError)
+		return
+	}
+	resp = utils.NewRespWithMessage(utils.SuccessCode, "更新成功")
 	return
 }
