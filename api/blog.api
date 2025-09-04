@@ -95,9 +95,17 @@ type (
 	}
 )
 
-// 读操作 - 不需要认证
 @server (
-	group: public
+	jwt:   Auth
+	group: user
+)
+service blog-api {
+	@handler update
+	post /api/user/update (RegisterReq) returns (BaseResp)
+}
+
+@server (
+	group: user
 )
 service blog-api {
 	@handler login
@@ -106,30 +114,8 @@ service blog-api {
 	@handler info
 	get /api/user/info (UserInfoReq) returns (UserInfoResp)
 
-	@handler listCategories
-	get /api/category/list returns (CategoryListResp)
-
-	@handler listTags
-	get /api/tag/list returns (TagListResp)
-
-	@handler listPosts
-	get /api/post/list (PostListReq) returns (PostListResp)
-
-	@handler postDetail
-	get /api/post/detail (IdReq) returns (Post)
-}
-
-// 写操作 - 需要JWT认证
-@server (
-	jwt:   Auth
-	group: user
-)
-service blog-api {
 	@handler register
 	post /api/user/register (RegisterReq) returns (BaseResp)
-
-	@handler update
-	post /api/user/update (RegisterReq) returns (BaseResp)
 }
 
 @server (
@@ -145,6 +131,14 @@ service blog-api {
 }
 
 @server (
+	group: category
+)
+service blog-api {
+	@handler listCategories
+	get /api/category/list returns (CategoryListResp)
+}
+
+@server (
 	jwt:   Auth
 	group: tag
 )
@@ -154,6 +148,14 @@ service blog-api {
 
 	@handler deleteTag
 	post /api/tag/delete (IdReq) returns (BaseResp)
+}
+
+@server (
+	group: tag
+)
+service blog-api {
+	@handler listTags
+	get /api/tag/list returns (TagListResp)
 }
 
 @server (
@@ -169,5 +171,16 @@ service blog-api {
 
 	@handler deletePost
 	post /api/post/delete (IdReq) returns (BaseResp)
+}
+
+@server (
+	group: post
+)
+service blog-api {
+	@handler listPosts
+	get /api/post/list (PostListReq) returns (PostListResp)
+
+	@handler postDetail
+	get /api/post/detail (IdReq) returns (Post)
 }
 

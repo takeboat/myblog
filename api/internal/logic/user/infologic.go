@@ -24,7 +24,6 @@ func NewInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *InfoLogic {
 		svcCtx: svcCtx,
 	}
 }
-
 func (l *InfoLogic) Info(req *types.UserInfoReq) (resp *types.UserInfoResp, err error) {
 	user, err := l.svcCtx.UserModel.FindByUsername(req.Username)
 	if err != nil {

@@ -1,4 +1,4 @@
-package public
+package post
 
 import (
 	"context"
@@ -9,21 +9,21 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type ListTagsLogic struct {
+type ViewPostLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-func NewListTagsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListTagsLogic {
-	return &ListTagsLogic{
+func NewViewPostLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ViewPostLogic {
+	return &ViewPostLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *ListTagsLogic) ListTags() (resp *types.TagListResp, err error) {
+func (l *ViewPostLogic) ViewPost(req *types.IdReq) (resp *types.BaseResp, err error) {
 	// todo: add your logic here and delete this line
 
 	return
