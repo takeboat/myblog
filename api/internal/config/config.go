@@ -4,11 +4,14 @@ import "github.com/zeromicro/go-zero/rest"
 
 type Config struct {
 	rest.RestConf
-	DataSource string
-	Auth    JwtAuth
+	DataBase DataBase
+	Auth     Auth
 }
 
-type JwtAuth struct {
+type Auth struct {
 	AccessSecret string
 	AccessExpire int64
+}
+type DataBase struct {
+	DataSource string
 }

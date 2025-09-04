@@ -3,6 +3,6 @@ Host: 0.0.0.0
 Port: 8888
 DataBase:
   DataSource: root:root@tcp(127.0.0.1:3306)/blog?charset=utf8mb4&parseTime=true
-JwtAuth:
+Auth:
   AccessSecret: blog-takeboat-key
-  AccessExpire: 3600 * 10
+  AccessExpire: 36000

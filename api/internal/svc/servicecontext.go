@@ -9,7 +9,7 @@ import (
 )
 
 type ServiceContext struct {
-	Config        config.Config
+	Config config.Config
 
 	CategoryModel model.CategoryModel
 	PostModel     model.PostModel
@@ -18,7 +18,7 @@ type ServiceContext struct {
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	db, err := gorm.Open(mysql.Open(c.DataSource), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(c.DataBase.DataSource), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
