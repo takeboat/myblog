@@ -44,10 +44,12 @@ type PostModel interface {
 	List(page, pageSize int, categoryID *int64) ([]Post, int64, error)
 	Update(post *Post) error
 	Delete(id int64) error
-	AddTags(postID int64, tagIDs []int64) error
-	RemoveTags(postID int64, tagIDs []int64) error
 	GetPostWithTags(id int64) (*Post, error)
 	IncreaseViewCount(id int64) error
+	BeginTx() *gorm.DB
+	UpdateWithTx(tx *gorm.DB, post *Post) error
+	RemoveTagsWithTx(tx *gorm.DB, postID int64) error
+	AddTagsWithTx(tx *gorm.DB, postID int64, tagIDs []int64) error
 }
 
 type postModel struct {
@@ -102,30 +104,6 @@ func (m *postModel) Delete(id int64) error {
 	return m.db.Delete(&Post{}, id).Error
 }
 
-func (m *postModel) AddTags(postID int64, tagIDs []int64) error {
-	if len(tagIDs) == 0 {
-		return nil
-	}
-
-	var postTags []PostTag
-	for _, tagID := range tagIDs {
-		postTags = append(postTags, PostTag{
-			PostID: postID,
-			TagID:  tagID,
-		})
-	}
-
-	return m.db.Create(&postTags).Error
-}
-
-func (m *postModel) RemoveTags(postID int64, tagIDs []int64) error {
-	if len(tagIDs) == 0 {
-		return nil
-	}
-
-	return m.db.Where("post_id = ? AND tag_id IN ?", postID, tagIDs).Delete(&PostTag{}).Error
-}
-
 func (m *postModel) GetPostWithTags(id int64) (*Post, error) {
 	var post Post
 	err := m.db.Preload("Tags").Preload("User").Preload("Category").
@@ -139,4 +117,28 @@ func (m *postModel) GetPostWithTags(id int64) (*Post, error) {
 func (m *postModel) IncreaseViewCount(id int64) error {
 	return m.db.Model(&Post{}).Where("id = ?", id).
 		Update("view_count", gorm.Expr("view_count + 1")).Error
+}
+
+func (m *postModel) BeginTx() *gorm.DB {
+	return m.db.Begin()
+}
+func (m *postModel) UpdateWithTx(tx *gorm.DB, post *Post) error {
+	return tx.Save(post).Error
+}
+func (m *postModel) RemoveTagsWithTx(tx *gorm.DB, postID int64)error {
+	return tx.Where("post_id = ?", postID).Delete(&PostTag{}).Error
+}
+
+func (m *postModel) AddTagsWithTx(tx *gorm.DB, postID int64, tagIDs []int64) error {
+	if len(tagIDs) == 0 {
+		return nil
+	}
+	var postTags []PostTag
+	for _, tagID := range tagIDs {
+		postTags = append(postTags, PostTag{
+			PostID: postID,
+			TagID:  tagID,
+		})
+	}
+	return tx.Create(&postTags).Error
 }

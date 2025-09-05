@@ -47,17 +47,10 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err erro
 		resp.BaseResp = *utils.NewErrRespWithCode(utils.GenerateTokenFailed)
 		return
 	}
-<<<<<<< HEAD
-	resp = &types.LoginResp{
-		AccessToken: token,
-		ExpiresIn:   l.svcCtx.Config.Auth.AccessExpire,
-	}
-=======
 	resp.BaseResp = *utils.NewSuccessResp()
 
 	resp.AccessToken = token
 	resp.ExpiresIn = l.svcCtx.Config.Auth.AccessExpire
->>>>>>> 21e692b (refactor(api): 重构 API 响应格式并优化用户登录逻辑)
 	return
 }
 

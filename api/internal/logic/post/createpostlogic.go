@@ -36,6 +36,14 @@ func (l *CreatePostLogic) CreatePost(req *types.CreatePostReq) (resp *types.Base
 		resp = utils.NewErrRespWithMessage(utils.InvalidCredentials, "用户不存在")
 		return
 	}
+	tx := l.svcCtx.PostModel.BeginTx()
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		} else {
+			tx.Commit()
+		}
+	}()
 	post := &model.Post{
 		Title:     req.Title,
 		Content:   req.Content,
@@ -52,7 +60,7 @@ func (l *CreatePostLogic) CreatePost(req *types.CreatePostReq) (resp *types.Base
 		return
 	}
 	if len(req.TagIds) > 0 {
-		err = l.svcCtx.PostModel.AddTags(post.ID, req.TagIds)
+		err = l.svcCtx.PostModel.AddTagsWithTx(tx, post.ID, req.TagIds)
 		if err != nil {
 			resp = utils.NewErrRespWithMessage(utils.DatabaseError, "添加标签失败")
 			return

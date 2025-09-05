@@ -35,25 +35,46 @@ func (l *UpdatePostLogic) UpdatePost(req *types.UpdatePostReq) (resp *types.Base
 		resp = utils.NewErrRespWithMessage(utils.InvalidCredentials, "用户无权限修改该文章")
 		return
 	}
+
+	tx := l.svcCtx.PostModel.BeginTx()
+
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		} else {
+			tx.Commit()
+		}
+	}()
+	if tx.Error != nil {
+		resp = utils.NewErrRespWithMessage(utils.DatabaseError, "开启事务失败")
+		return
+	}
+	// 更新文章
 	post.Title = req.Title
 	post.Content = req.Content
 	if req.CategoryId != nil {
 		post.CategoryID = req.CategoryId
 	}
-
-	err = l.svcCtx.PostModel.Update(post)
+	err = l.svcCtx.PostModel.UpdateWithTx(tx, post)
 	if err != nil {
 		resp = utils.NewErrRespWithMessage(utils.DatabaseError, "更新文章失败")
 		return
 	}
-	if req.TagIds != nil {
-		err = l.svcCtx.PostModel.RemoveTags(post.ID, req.TagIds)
+	// 删除旧标签 添加新标签
+	if len(req.TagIds) > 0 {
+		err = l.svcCtx.PostModel.RemoveTagsWithTx(tx, post.ID)
 		if err != nil {
-			resp = utils.NewErrRespWithMessage(utils.DatabaseError, "更新文章失败")
+			resp = utils.NewErrRespWithMessage(utils.DatabaseError, "删除标签失败")
 			return
 		}
-		err = l.svcCtx.PostModel.InsertPostTags(post.ID, req.TagIds)
+		err = l.svcCtx.PostModel.AddTagsWithTx(tx, post.ID, req.TagIds)
+		if err != nil {
+			resp = utils.NewErrRespWithMessage(utils.DatabaseError, "添加标签失败")
+			return
+		}
 	}
+	resp = utils.NewSuccessResp()
+	return
 }
 
 func (l *UpdatePostLogic) getCurrentUserID() int64 {
