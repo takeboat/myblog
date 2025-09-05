@@ -69,10 +69,11 @@ type Post struct {
 type PostListReq struct {
 	Page       int    `json:"page"`
 	PageSize   int    `json:"page_size"`
-	CategoryId *int64 `json:"category_d,omitempty"`
+	CategoryId *int64 `json:"category_id,omitempty"`
 }
 
 type PostListResp struct {
+	BaseResp
 	List  []Post `json:"list"`
 	Total int64  `json:"total"`
 }
@@ -92,6 +93,14 @@ type Tag struct {
 
 type TagListResp struct {
 	List []Tag `json:"list"`
+}
+
+type UpdatePostReq struct {
+	Id         int64   `path:"id"`
+	Title      string  `json:"title"`
+	Content    string  `json:"content"`
+	CategoryId *int64  `json:"category_id,omitempty"`
+	TagIds     []int64 `json:"tag_ids,omitempty"`
 }
 
 type UserInfoReq struct {

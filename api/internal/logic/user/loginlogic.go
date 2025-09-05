@@ -49,7 +49,7 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err erro
 	}
 	resp = &types.LoginResp{
 		AccessToken: token,
-		ExpiresIn:   time.Now().Add(time.Second * time.Duration(l.svcCtx.Config.Auth.AccessExpire)).Unix(),
+		ExpiresIn:   l.svcCtx.Config.Auth.AccessExpire,
 	}
 	return
 }

@@ -81,12 +81,20 @@ type (
 		CategoryId *int64  `json:"category_id,omitempty"`
 		TagIds     []int64 `json:"tag_ids,omitempty"`
 	}
+	UpdatePostReq {
+		Id         int64   `path:"id"`
+		Title      string  `json:"title"`
+		Content    string  `json:"content"`
+		CategoryId *int64  `json:"category_id,omitempty"`
+		TagIds     []int64 `json:"tag_ids,omitempty"`
+	}
 	PostListReq {
 		Page       int    `json:"page"`
 		PageSize   int    `json:"page_size"`
-		CategoryId *int64 `json:"category_d,omitempty"`
+		CategoryId *int64 `json:"category_id,omitempty"`
 	}
 	PostListResp {
+		BaseResp
 		List  []Post `json:"list"`
 		Total int64  `json:"total"`
 	}
@@ -167,7 +175,7 @@ service blog-api {
 	post /api/post/create (CreatePostReq) returns (BaseResp)
 
 	@handler updatePost
-	post /api/post/update (CreatePostReq) returns (BaseResp)
+	post /api/post/update (UpdatePostReq) returns (BaseResp)
 
 	@handler deletePost
 	post /api/post/delete (IdReq) returns (BaseResp)

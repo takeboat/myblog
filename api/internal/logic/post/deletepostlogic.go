@@ -5,6 +5,7 @@ import (
 
 	"blog/api/internal/svc"
 	"blog/api/internal/types"
+	"blog/api/internal/utils"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -24,7 +25,20 @@ func NewDeletePostLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Delete
 }
 
 func (l *DeletePostLogic) DeletePost(req *types.IdReq) (resp *types.BaseResp, err error) {
-	// todo: add your logic here and delete this line
-
+	post, err := l.svcCtx.PostModel.FindByID(req.Id)
+	if err != nil {
+		resp = utils.NewErrRespWithCode(utils.DatabaseError)
+		return
+	}
+	if post == nil {
+		resp = utils.NewErrRespWithCode(utils.PostNotFound)
+		return
+	}
+	err = l.svcCtx.PostModel.Delete(req.Id)
+	if err != nil {
+		resp = utils.NewErrRespWithCode(utils.DatabaseError)
+		return
+	}
+	resp = utils.NewSuccessResp()
 	return
 }
