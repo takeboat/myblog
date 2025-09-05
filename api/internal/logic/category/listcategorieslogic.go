@@ -5,6 +5,7 @@ import (
 
 	"blog/api/internal/svc"
 	"blog/api/internal/types"
+	"blog/api/internal/utils"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -26,6 +27,9 @@ func NewListCategoriesLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Li
 func (l *ListCategoriesLogic) ListCategories() (resp *types.CategoryListResp, err error) {
 	categories, err := l.svcCtx.CategoryModel.List()
 	if err != nil {
+		resp = &types.CategoryListResp{}
+		base := utils.NewErrRespWithCode(utils.DatabaseError)
+		resp.BaseResp = *base
 		return
 	}
 	resp = &types.CategoryListResp{
@@ -38,5 +42,6 @@ func (l *ListCategoriesLogic) ListCategories() (resp *types.CategoryListResp, er
 			CreatedAt: category.CreatedAt.Format("2006-01-02 15:04:05"),
 		}
 	}
+	resp.BaseResp = *utils.NewSuccessResp()
 	return
 }

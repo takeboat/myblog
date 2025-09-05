@@ -15,6 +15,7 @@ type Category struct {
 }
 
 type CategoryListResp struct {
+	BaseResp
 	List []Category `json:"list"`
 }
 
@@ -44,11 +45,12 @@ type IdReq struct {
 }
 
 type LoginReq struct {
-	Username string `json:"username"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
 type LoginResp struct {
+	BaseResp
 	AccessToken string `json:"access_token"`
 	ExpiresIn   int64  `json:"expires_in"`
 }
@@ -92,6 +94,7 @@ type Tag struct {
 }
 
 type TagListResp struct {
+	BaseResp
 	List []Tag `json:"list"`
 }
 

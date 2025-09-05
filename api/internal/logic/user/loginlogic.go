@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"blog/api/internal/svc"
@@ -29,28 +28,36 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 }
 
 func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err error) {
-	user, err := l.svcCtx.UserModel.FindByUsername(req.Username)
+	resp = &types.LoginResp{}
+	user, err := l.svcCtx.UserModel.FindByEmail(req.Email)
 	if err != nil {
-		err = fmt.Errorf("database error: %v", err)
+		resp.BaseResp = *utils.NewErrRespWithCode(utils.DatabaseError)
 		return
 	}
 	if user == nil {
-		err = fmt.Errorf("%s:%s", utils.ErrorCodeMessages[utils.UserNotFound], req.Username)
+		resp.BaseResp = *utils.NewErrRespWithCode(utils.UserNotFound)
 		return
 	}
 	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
-		err = fmt.Errorf("%s:%s", utils.ErrorCodeMessages[utils.InvalidCredentials], req.Username)
+		resp.BaseResp = *utils.NewErrRespWithCode(utils.InvalidCredentials)
 		return
 	}
 	token, err := l.generateToken(user.ID, user.Username)
 	if err != nil {
-		err = fmt.Errorf("%s:%s", utils.ErrorCodeMessages[utils.GenerateTokenFailed], req.Username)
+		resp.BaseResp = *utils.NewErrRespWithCode(utils.GenerateTokenFailed)
 		return
 	}
+<<<<<<< HEAD
 	resp = &types.LoginResp{
 		AccessToken: token,
 		ExpiresIn:   l.svcCtx.Config.Auth.AccessExpire,
 	}
+=======
+	resp.BaseResp = *utils.NewSuccessResp()
+
+	resp.AccessToken = token
+	resp.ExpiresIn = l.svcCtx.Config.Auth.AccessExpire
+>>>>>>> 21e692b (refactor(api): 重构 API 响应格式并优化用户登录逻辑)
 	return
 }
 
