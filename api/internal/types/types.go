@@ -3,6 +3,24 @@
 
 package types
 
+type Archive struct {
+	Year  int           `json:"year"`
+	Month int           `json:"month"`
+	Posts []PostArchive `json:"posts"`
+}
+
+type ArchiveReq struct {
+	Page     int `json:"page"`
+	PageSize int `json:"page_size"`
+}
+
+type ArchiveResp struct {
+	BaseResp
+	Data  []Archive `json:"data"`
+	Total int64     `json:"total"`
+	Page  int       `json:"page"`
+}
+
 type BaseResp struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
@@ -66,6 +84,12 @@ type Post struct {
 	Tags       []Tag  `json:"tags,omitempty"`
 	CreatedAt  string `json:"created_at"`
 	UpdatedAt  string `json:"updated_at"`
+}
+
+type PostArchive struct {
+	Id        int64  `json:"id"`
+	Title     string `json:"title"`
+	CreatedAt string `json:"created_at"`
 }
 
 type PostListReq struct {

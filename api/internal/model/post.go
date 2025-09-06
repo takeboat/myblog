@@ -1,6 +1,8 @@
 package model
 
 import (
+	"blog/api/internal/types"
+	"sort"
 	"time"
 
 	"gorm.io/gorm"
@@ -50,6 +52,7 @@ type PostModel interface {
 	UpdateWithTx(tx *gorm.DB, post *Post) error
 	RemoveTagsWithTx(tx *gorm.DB, postID int64) error
 	AddTagsWithTx(tx *gorm.DB, postID int64, tagIDs []int64) error
+	GetArchivedPosts(page, pageSize int) ([]types.Archive, int64, error)
 }
 
 type postModel struct {
@@ -125,7 +128,7 @@ func (m *postModel) BeginTx() *gorm.DB {
 func (m *postModel) UpdateWithTx(tx *gorm.DB, post *Post) error {
 	return tx.Save(post).Error
 }
-func (m *postModel) RemoveTagsWithTx(tx *gorm.DB, postID int64)error {
+func (m *postModel) RemoveTagsWithTx(tx *gorm.DB, postID int64) error {
 	return tx.Where("post_id = ?", postID).Delete(&PostTag{}).Error
 }
 
@@ -141,4 +144,57 @@ func (m *postModel) AddTagsWithTx(tx *gorm.DB, postID int64, tagIDs []int64) err
 		})
 	}
 	return tx.Create(&postTags).Error
+}
+
+func (m *postModel) GetArchivedPosts(page, pageSize int) ([]types.Archive, int64, error) {
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+	// 获取文章总数
+	var total int64
+	err := m.db.Model(&Post{}).Where("deleted_at IS NULL and status = 1").Count(&total).Error
+	if err != nil {
+		return nil, 0, err
+	}
+	// 分页获取文章归档列表
+	offset := (page - 1) * pageSize
+	var posts []Post
+	err = m.db.Model(&Post{}).Where("deleted_at IS NULL and status = 1").Order("created_at DESC").
+		Offset(offset).Limit(pageSize).Find(&posts).Error
+	if err != nil {
+		return nil, 0, err
+	}
+	// 将文章按照 年 月 分开
+	var mapArchive = make(map[string][]types.PostArchive)
+	for _, post := range posts {
+		yearMonth := post.CreatedAt.Format("2006-01")
+		postArchive := types.PostArchive{
+			Id:        post.ID,
+			Title:     post.Title,
+			CreatedAt: post.CreatedAt.Format("2006-01-02"),
+		}
+		mapArchive[yearMonth] = append(mapArchive[yearMonth], postArchive)
+	}
+	// 将其聚合
+	var archives []types.Archive
+	for key, postarchives := range mapArchive {
+		var t time.Time
+		t, _ = time.Parse("2006-01", key)
+		archives = append(archives, types.Archive{
+			Year:  t.Year(),
+			Month: int(t.Month()),
+			Posts: postarchives,
+		})
+	}
+	// 按照时间排序
+	sort.Slice(archives, func(i, j int) bool {
+		if archives[i].Year != archives[j].Year {
+			return archives[i].Year > archives[j].Year
+		}
+		return archives[i].Month > archives[j].Month
+	})
+	return archives, total, nil
 }

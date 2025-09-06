@@ -104,6 +104,26 @@ type (
 	IdReq {
 		Id int64 `path:"id"`
 	}
+	PostArchive {
+		Id        int64  `json:"id"`
+		Title     string `json:"title"`
+		CreatedAt string `json:"created_at"`
+	}
+	Archive {
+		Year  int           `json:"year"`
+		Month int           `json:"month"`
+		Posts []PostArchive `json:"posts"`
+	}
+	ArchiveReq {
+		Page     int `json:"page"`
+		PageSize int `json:"page_size"`
+	}
+	ArchiveResp {
+		BaseResp
+		Data  []Archive `json:"data"`
+		Total int64     `json:"total"`
+		Page  int       `json:"page"`
+	}
 )
 
 @server (
@@ -193,5 +213,8 @@ service blog-api {
 
 	@handler postDetail
 	get /api/post/detail (IdReq) returns (Post)
+
+	@handler archive
+	get /api/post/archive (ArchiveReq) returns (ArchiveResp)
 }
 

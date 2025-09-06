@@ -67,6 +67,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodGet,
+				Path:    "/api/post/archive",
+				Handler: post.ArchiveHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
 				Path:    "/api/post/detail",
 				Handler: post.PostDetailHandler(serverCtx),
 			},

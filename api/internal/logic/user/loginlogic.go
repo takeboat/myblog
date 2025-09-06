@@ -58,7 +58,7 @@ func (l *LoginLogic) generateToken(userID int64, username string) (string, error
 	claims := &jwt.MapClaims{
 		"user_id":  userID,
 		"username": username,
-		"exp":      time.Now().Add(time.Second * time.Duration(l.svcCtx.Config.Auth.AccessExpire)),
+		"exp":      time.Now().Add(time.Duration(l.svcCtx.Config.Auth.AccessExpire) * time.Second).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(l.svcCtx.Config.Auth.AccessSecret))
